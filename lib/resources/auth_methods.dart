@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:instagram_clone/resources/storage_methods.dart';
 import 'package:instagram_clone/models/user_model.dart' as model;
 
@@ -11,9 +10,9 @@ class AuthMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<model.User> getUserDetails() async {
-    User? currentUser = _auth.currentUser;
+    User? currentUser = _auth.currentUser!;
     DocumentSnapshot snap =
-        await _firestore.collection('users').doc(currentUser!.uid).get();
+        await _firestore.collection('users').doc(currentUser.uid).get();
     return model.User.fromSnap(snap);
   }
 
@@ -55,7 +54,6 @@ class AuthMethods {
         res = 'The email is badly formatted';
       }
     } catch (e, s) {
-      print(e.toString() + s.toString());
     }
     return res;
   }

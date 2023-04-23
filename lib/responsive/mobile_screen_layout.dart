@@ -1,10 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:instagram_clone/providers/user_provider.dart';
-import 'package:instagram_clone/screens/login_screen.dart';
-import 'package:provider/provider.dart';
-import '../models/user_model.dart' as model;
-import '../screens/sign_up_screen.dart';
 import '../utils/colors.dart';
 import '../utils/constants.dart';
 
@@ -31,6 +26,8 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
     pageController.dispose();
   }
 
+
+
   void navigationTapped(int page) {
     pageController.jumpToPage(page);
   }
@@ -43,15 +40,13 @@ class _MobileScreenLayoutState extends State<MobileScreenLayout> {
 
   @override
   Widget build(BuildContext context) {
-    model.User? user = Provider.of<UserProvider>(context).getUser;
 
     return Scaffold(
       body: PageView(
-        physics: const NeverScrollableScrollPhysics(),
-        controller: pageController,
-        onPageChanged: onPageChanged,
-        children: homeScreenItems
-      ),
+          physics: const NeverScrollableScrollPhysics(),
+          controller: pageController,
+          onPageChanged: onPageChanged,
+          children: homeScreenItems),
       bottomNavigationBar: CupertinoTabBar(
         onTap: navigationTapped,
         backgroundColor: mobileBackgroundColor,
