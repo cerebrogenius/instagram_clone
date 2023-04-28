@@ -18,6 +18,7 @@ class AddPostScreen extends StatefulWidget {
 
 class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
+  final TextEditingController _descriptionController = TextEditingController();
 
   _selectImage(BuildContext context) async {
     return showDialog(
@@ -108,10 +109,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
                       child: AspectRatio(
                         aspectRatio: 467 / 451,
                         child: Container(
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                               image: DecorationImage(
-                                  image: NetworkImage(
-                                      'https://images.news18.com/ibnlive/uploads/2021/07/1627448017_world-nature-conservation-day.png'),
+                                  image: MemoryImage(_file!),
                                   fit: BoxFit.fill,
                                   alignment: FractionalOffset.topCenter)),
                         ),
