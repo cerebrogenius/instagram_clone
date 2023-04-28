@@ -6,6 +6,7 @@ import 'package:instagram_clone/models/user_model.dart' as model;
 import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../resources/firestore_methods.dart';
 import '../utils/colors.dart';
 import '../utils/utils.dart';
 
@@ -19,6 +20,19 @@ class AddPostScreen extends StatefulWidget {
 class _AddPostScreenState extends State<AddPostScreen> {
   Uint8List? _file;
   final TextEditingController _descriptionController = TextEditingController();
+  void postImage(String uid, String username, String profImage) async {
+    try {
+      String res = await FirestoreMethods().uploadPost(
+          _descriptionController.text.toString(), _file!, uid, username, profImage);
+      if (res == 'success') {
+        showSnackBar('Posted', context);
+      } else {
+        showSnackBar(res, context);
+      }
+    } catch (e) {
+      showSnackBar(e.toString(), context);
+    }
+  }
 
   _selectImage(BuildContext context) async {
     return showDialog(
@@ -48,6 +62,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     _file = file;
                   });
                 },
+              ),
+              SimpleDialogOption(
+                padding: const EdgeInsets.all(20),
+                child: const Text('Cancel'),
+                onPressed: () async {
+                  Navigator.of(context).pop();
+                },
               )
             ],
           );
@@ -73,7 +94,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
               title: const Text('Post to'),
               actions: [
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      postImage(user!.uid, user.username, user.photoUrl);
+                    },
                     child: const Text(
                       'Post',
                       style: TextStyle(
@@ -95,8 +118,9 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.4,
-                      child: const TextField(
-                        decoration: InputDecoration(
+                      child: TextField(
+                        controller: _descriptionController,
+                        decoration: const InputDecoration(
                           hintText: 'Write a Caption',
                           border: InputBorder.none,
                         ),
