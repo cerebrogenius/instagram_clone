@@ -122,7 +122,25 @@ class PostCard extends StatelessWidget {
                             TextSpan(text: ':  hey this is some description to be replaced')
                           ]
                         )),
-                      )
+                      ),
+                      InkWell(
+                        onTap: (){},
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: const Text(
+                            'View all 200 comments',
+                            style: const TextStyle(fontSize: 16, color: secondaryColor)
+                          )
+                        ),
+                        
+                      ),
+                      Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: const Text(
+                            '22/12/2021',
+                            style: TextStyle(fontSize: 16, color: secondaryColor)
+                          )
+                        )
                     ],
                   )
                 )
