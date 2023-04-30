@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../models/user_model.dart';
+import '../resources/firestore_methods.dart';
 import '../utils/colors.dart';
 import 'like_animation.dart';
 
@@ -75,7 +76,9 @@ class _PostCardState extends State<PostCard> {
               ]),
             ),
             GestureDetector(
-              onDoubleTap: () {
+              onDoubleTap: () async {
+                await FirestoreMethods().LikePost(
+                    widget.snap['postId'], user!.uid, widget.snap['likes']);
                 setState(() {
                   isLikeAnimating = true;
                 });
@@ -111,8 +114,11 @@ class _PostCardState extends State<PostCard> {
                 isAnimating: widget.snap['likes'].contains(user!.uid),
                 smallLike: true,
                 child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.favorite, color: Colors.red)),
+                    onPressed: () async {
+                      await FirestoreMethods().LikePost(widget.snap['postId'],
+                          user.uid, widget.snap['likes']);
+                    },
+                    icon: widget.snap['likes'].contains(user.uid)? const Icon(Icons.favorite, color: Colors.red): const Icon(Icons.favorite_border)),
               ),
               IconButton(
                   onPressed: () {}, icon: const Icon(Icons.comment_outlined)),
