@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
+import 'package:instagram_clone/providers/user_provider.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
+import '../models/user_model.dart';
 import '../utils/colors.dart';
+import 'like_animation.dart';
 
-class PostCard extends StatelessWidget {
-  const PostCard({super.key});
+class PostCard extends StatefulWidget {
+  final snap;
+  const PostCard({super.key, required this.snap});
+
+  @override
+  State<PostCard> createState() => _PostCardState();
+}
+
+class _PostCardState extends State<PostCard> {
+  bool isLikeAnimating = false;
 
   @override
   Widget build(BuildContext context) {
+    final User? user = Provider.of<UserProvider>(context).getUser;
     return Container(
         color: mobileBackgroundColor,
         padding: const EdgeInsets.symmetric(vertical: 10),
@@ -18,20 +32,19 @@ class PostCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16)
                   .copyWith(right: 0),
               child: Row(children: [
-                const CircleAvatar(
-                  radius: 16,
-                  backgroundImage: NetworkImage(
-                      'https://cdn.pixabay.com/photo/2014/12/24/05/02/drop-of-water-578897__480.jpg'),
-                ),
+                CircleAvatar(
+                    radius: 16,
+                    backgroundImage: NetworkImage(widget.snap['profImage'])),
                 Expanded(
                   child: Padding(
                       padding: const EdgeInsets.only(left: 8),
                       child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children:const [
-                            Text('username',
-                                style: TextStyle(fontWeight: FontWeight.bold))
+                          children: [
+                            Text(widget.snap['username'],
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold))
                           ])),
                 ),
                 IconButton(
@@ -43,107 +56,123 @@ class PostCard extends StatelessWidget {
                                   padding:
                                       const EdgeInsets.symmetric(vertical: 16),
                                   shrinkWrap: true,
-                                  children: [
-                                    'Delete', 'Allow'
-                                  ].map((e) => InkWell(
-                                    onTap: (){},
-                                    child: Container(
-                                      padding:const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                                      child: Text(e),),
-                                  )).toList()),
+                                  children: ['Delete', 'Allow']
+                                      .map((e) => InkWell(
+                                            onTap: () {},
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 12,
+                                                      horizontal: 16),
+                                              child: Text(e),
+                                            ),
+                                          ))
+                                      .toList()),
                             ));
                   },
                   icon: const Icon(Icons.more_vert),
                 )
               ]),
-            ),SizedBox(
-              height: MediaQuery.of(context).size.height*0.35,
-              width: double.infinity,
-              child: Image.network(
-                'https://cdn.pixabay.com/photo/2014/12/24/05/02/drop-of-water-578897__480.jpg',
-                fit: BoxFit.cover
-              )
-              ),
-              Row(
+            ),
+            GestureDetector(
+              onDoubleTap: () {
+                setState(() {
+                  isLikeAnimating = true;
+                });
+              },
+              child: Stack(
+                alignment: Alignment.center,
                 children: [
-                  IconButton(
-                    onPressed: (){},
-                    icon: const Icon(Icons.favorite,color: Colors.red)
+                  SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      width: double.infinity,
+                      child: Image.network(widget.snap['postUrl'],
+                          fit: BoxFit.cover)),
+                  AnimatedOpacity(
+                    duration: const Duration(milliseconds: 200),
+                    opacity: isLikeAnimating ? 1 : 0,
+                    child: LikeAnimation(
+                      isAnimating: isLikeAnimating,
+                      duration: const Duration(milliseconds: 420),
+                      onEnd: () {
+                        setState(() {
+                          isLikeAnimating = false;
+                        });
+                      },
+                      child: const Icon(Icons.favorite,
+                          color: Colors.white, size: 120),
                     ),
-                     IconButton(
-                    onPressed: (){},
-                    icon: const Icon(Icons.comment_outlined)
-                    ),
-                      IconButton(
-                    onPressed: (){},
-                    icon: const Icon(Icons.send)
-                    ),
-                    Expanded(
-                      child: Align(alignment: Alignment.bottomRight,
-                      child:   IconButton(
-                    onPressed: (){},
-                    icon: const Icon(Icons.bookmark_border)
-                    ),
-                      ),), 
-
-                ]
-              ),
-              Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DefaultTextStyle(
-                        style: Theme.of(context).textTheme.subtitle1!.copyWith(fontWeight: FontWeight.w300),
-                        child: Text(
-                          '1,231 likes',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ),
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.only(
-                          top:8
-                        ),
-                        child: RichText(text: const TextSpan(
-                          style: TextStyle(
-                            color: primaryColor
-                          ),
-                          children:  [
-                            TextSpan(
-                              text: 'username',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold
-                              )
-                            ),
-                            TextSpan(text: ':  hey this is some description to be replaced')
-                          ]
-                        )),
-                      ),
-                      InkWell(
-                        onTap: (){},
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: const Text(
-                            'View all 200 comments',
-                            style: const TextStyle(fontSize: 16, color: secondaryColor)
-                          )
-                        ),
-                        
-                      ),
-                      Container(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: const Text(
-                            '22/12/2021',
-                            style: TextStyle(fontSize: 16, color: secondaryColor)
-                          )
-                        )
-                    ],
                   )
-                )
+                ],
+              ),
+            ),
+            Row(children: [
+              LikeAnimation(
+                isAnimating: widget.snap['likes'].contains(user!.uid),
+                smallLike: true,
+                child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.favorite, color: Colors.red)),
+              ),
+              IconButton(
+                  onPressed: () {}, icon: const Icon(Icons.comment_outlined)),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.send)),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.bookmark_border)),
+                ),
+              ),
+            ]),
+            Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    DefaultTextStyle(
+                      style: Theme.of(context)
+                          .textTheme
+                          .subtitle1!
+                          .copyWith(fontWeight: FontWeight.w300),
+                      child: Text(
+                        '${widget.snap['likes'].length} likes',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.only(top: 8),
+                      child: RichText(
+                          text: TextSpan(
+                              style: const TextStyle(color: primaryColor),
+                              children: [
+                            TextSpan(
+                                text: widget.snap['username'],
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            TextSpan(text: ':  ${widget.snap['description']}')
+                          ])),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: const Text('View all 200 comments',
+                              style: const TextStyle(
+                                  fontSize: 16, color: secondaryColor))),
+                    ),
+                    Container(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Text(
+                            DateFormat.yMMMd().format(
+                              widget.snap['datePublished'].toDate(),
+                            ),
+                            style:
+                                TextStyle(fontSize: 16, color: secondaryColor)))
+                  ],
+                ))
           ],
         ));
   }
