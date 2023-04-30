@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../models/user_model.dart';
 import '../resources/firestore_methods.dart';
+import '../screens/comments_screen.dart';
 import '../utils/colors.dart';
 import 'like_animation.dart';
 
@@ -118,10 +119,18 @@ class _PostCardState extends State<PostCard> {
                       await FirestoreMethods().LikePost(widget.snap['postId'],
                           user.uid, widget.snap['likes']);
                     },
-                    icon: widget.snap['likes'].contains(user.uid)? const Icon(Icons.favorite, color: Colors.red): const Icon(Icons.favorite_border)),
+                    icon: widget.snap['likes'].contains(user.uid)
+                        ? const Icon(Icons.favorite, color: Colors.red)
+                        : const Icon(Icons.favorite_border)),
               ),
               IconButton(
-                  onPressed: () {}, icon: const Icon(Icons.comment_outlined)),
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return const CommentScreen();
+                    }));
+                  },
+                  icon: const Icon(Icons.comment_outlined)),
               IconButton(onPressed: () {}, icon: const Icon(Icons.send)),
               Expanded(
                 child: Align(
@@ -157,7 +166,8 @@ class _PostCardState extends State<PostCard> {
                               children: [
                             TextSpan(
                                 text: widget.snap['username'],
-                                style: TextStyle(fontWeight: FontWeight.bold)),
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.bold)),
                             TextSpan(text: ':  ${widget.snap['description']}')
                           ])),
                     ),
@@ -166,7 +176,7 @@ class _PostCardState extends State<PostCard> {
                       child: Container(
                           padding: const EdgeInsets.symmetric(vertical: 4),
                           child: const Text('View all 200 comments',
-                              style: const TextStyle(
+                              style: TextStyle(
                                   fontSize: 16, color: secondaryColor))),
                     ),
                     Container(
@@ -175,8 +185,8 @@ class _PostCardState extends State<PostCard> {
                             DateFormat.yMMMd().format(
                               widget.snap['datePublished'].toDate(),
                             ),
-                            style:
-                                TextStyle(fontSize: 16, color: secondaryColor)))
+                            style: const TextStyle(
+                                fontSize: 16, color: secondaryColor)))
                   ],
                 ))
           ],
